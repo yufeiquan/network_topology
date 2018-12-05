@@ -1,0 +1,43 @@
+README
+
+Part 2
+
+
+These part contains a topology file and a controller files bonusTopo.py and bonus.py
+
+Task advance topology connection extension
+
+Open two terminals in Mac or PuTTy in Windows and connects to the Virtual BOX.
+
+Use command: “$ sudo mn -c” and command “$ sudo killall controller” to clean all topos and 
+controller are running.
+
+The bonusTopo should be put in directory ~/mininet
+
+Then use command: "$ sudo mn --custom bonusTopo.py --topo mytopo" to 
+build up a topology which has three hosts, a switch and a controller.
+
+The topology is similar to topo in Task 2, but more hosts.
+
+The bonus.py should be put in the directory ~mininet/pox/ext
+
+When topology has been successfully built up, to run the controller, use conmmand
+ “$ ./pox.py bonus”
+
+If you want to see the debug information use command: "$ ./pox.py log.level --DEBUG bonus"
+
+To see if the connection is established, use "mininet> pingall". and it will return the result of
+ping. 
+
+To see ICMP work, use "mininet> (any host) ping -c1 (an IP address not show up in topo and controller)"
+
+Router is pingable, use "mininet> (any host) ping -c1 (an IP address connects to the host in router)"
+
+To evaluate the network porformance use "mininet> iperf".
+
+Code discription:
+	
+	The function and data structure is similar to part 1 task 2, besides there is new class called router2 and 
+	router3. They are the classes which contain the routetable and port IP address of s2 and s3(the objects of router2
+	and router3)
+

@@ -1,0 +1,92 @@
+README
+
+Part 2
+
+
+These part contains two topology files and two controller files: aRouterTopo.py, advanceTopo.py and sRouterFireWall.
+py, advance.py
+
+
+Task 1 advance topology connection
+
+Open two terminals in Mac or PuTTy in Windows and connects to the Virtual BOX.
+
+Use command: “$ sudo mn -c” and command “$ sudo killall controller” to clean all topos and 
+controller are running.
+
+The advancetopo should be put in directory ~/mininet
+
+Then use command: "$ sudo mn --custom advanceTopo.py --topo mytopo" to 
+build up a topology which has three hosts, a switch and a controller.
+
+The topology is similar to topo in Task 2, but more hosts.
+
+The advance.py should be put in the directory ~mininet/pox/ext
+
+When topology has been successfully built up, to run the controller, use conmmand
+ “$ ./pox.py advance”
+
+If you want to see the debug information use command: "$ ./pox.py log.level --DEBUG advance"
+
+To see if the connection is established, use "mininet> pingall". and it will return the result of
+ping. 
+
+To see ICMP work, use "mininet> (any host) ping -c1 (an IP address not show up in topo and controller)"
+
+Router is pingable, use "mininet> (any host) ping -c1 (an IP address connects to the host in router)"
+
+To evaluate the network porformance use "mininet> iperf".
+
+Code discription:
+	
+	The function and data structure is similar to part 1 task 2, besides there is new class called router2. It is
+	the class which contains the routetable and port IP address of s2(the object of router2)
+
+
+Task 2 firewall
+
+Open two terminals in Mac or PuTTy in Windows and connects to the Virtual BOX.
+
+Use command: “$ sudo mn -c” and command “$ sudo killall controller” to clean all topos and 
+controller are running.
+
+The advancetopo should be put in directory ~/mininet
+
+Then use command: "$ sudo mn --custom aRouterTopo.py --topo mytopo" to 
+build up a topology which has three hosts, a switch and a controller.
+
+The topology is similar to topo in Task 2, but more hosts.
+
+The sRouterFireWall.py should be put in the directory ~mininet/pox/ext
+
+When topology has been successfully built up, to run the controller, use conmmand
+ “$ ./pox.py sRouterFireWall”
+
+If you want to see the debug information use command: "$ ./pox.py log.level --DEBUG sRouterFireWall"
+
+To see if the connection is established, use "mininet> pingall". and it will return the result of
+ping. 
+
+The program blocks the communication from h1 to h2
+
+To see ICMP work, use "mininet> (any host) ping -c1 (an IP address not show up in topo and controller)"
+
+Router is pingable, use "mininet> (any host) ping -c1 (an IP address connects to the host in router)"
+
+To evaluate the network porformance use "mininet> iperf".
+
+Code description:
+
+Similar to part1 task 2, beside it has a firewall table to block the communicaiton of specific IPs.
+
+
+
+
+
+
+
+
+
+
+
+

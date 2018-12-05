@@ -1,0 +1,178 @@
+README
+
+Part 1
+
+These part contains a topology file and two controller files: aRouterTopo.py, of_tutorial.py, sRouter.py
+
+
+Task 1 Learning Switch
+
+
+Open two terminals in Mac or PuTTy in Windows and connects to the Virtual BOX.
+
+Use command: “$ sudo mn -c” and command “$ sudo killall controller” to clean all topos and 
+controller are running.
+
+Then use command: "$ sudo mn --topo single,3 --mac --switch ovsk --controller remote" to 
+build up a topology which has three hosts, a switch and a controller.
+
+The of_tutorial should be put in the directory ~mininet/pox/pox/misc
+
+When topology has been successfully built up, to run the controller, use conmmand
+ “./pox.py misc.of_tutorial”
+
+If you want to see the debug information use command: "./pox.py log.level --DEBUG misc.
+of_tutorial"
+
+To see if the switch acts like a learning switch, use command: "mininet> xterm h1 h2 h3" in 
+topology terminal. Then it will show three xterm terminals. Use command: "# tcpdump -XX -n -i h2-eth0", 
+"# tcpdump -XX -n -i h3-eth0", "# ping -c1 10.0.0.2" in h3 h2 h1 respectively.
+
+Code discription:
+
+When switch boots up it will throw a event called "ConnectionUp", and the call the function
+start_switch. In start_switch it will use event.connection as a paramater in constructor and
+build a new Tutorial object. We use dictionary which key is the mac address and value is the 
+port number. When a PacketIn event is triggered, the "_handle_PacketIn" function is called and 
+the function in object "act_like_switch" be called. The event.parse and event.ofp are parameters
+to offer data or information to help us to decide which action we should take.
+
+At the first, packet source MAC address will be added in the dictionary. If the destination of 
+packet in the forwarding dictionary it will forward packet to specific port, otherwise switch 
+floods it to all ports.
+
+The other description is also in the comment of code.
+
+
+
+Task 2 A static Router
+
+
+Open two terminals in Mac or PuTTy in Windows and connects to the Virtual BOX.
+
+Use command: “$ sudo mn -c” and command “$ sudo killall controller” to clean all topos and 
+controller are running.
+
+The aRouterTopo should be put in directory ~/mininet
+
+Then use command: "$ sudo mn --custom aRouterTopo.py --topo mytopo" to 
+build up a topology which has three hosts, a switch and a controller.
+
+The topology is similar to topo in Task 1, but every host has been binded an IP and code it's
+default router.
+
+The srouter.py should be put in the directory ~mininet/pox/ext
+
+When topology has been successfully built up, to run the controller, use conmmand
+ “$ ./pox.py srouter”
+
+If you want to see the debug information use command: "$ ./pox.py log.level --DEBUG srouter"
+
+To see if the connection is established, use "mininet> pingall". and it will return the result of
+ping. 
+
+To see ICMP work, use "mininet> (any host) ping -c1 (an IP address not show up in topo and controller)"
+
+Router is pingable, use "mininet> (any host) ping -c1 (an IP address connects to the host in router)"
+
+To evaluate the network porformance use "mininet> iperf".
+
+Code discription:
+
+launch()
+When the controller boots up it will register a new component SwitchWarmUp in core to handle event. 
+
+class SwitchWarmUp(Object):
+When initialization, the component it add listeners to listen if "ConnectionUp" event occurs 
+and calls _handle_ to handle that event, which creates an object of class router1. 
+
+Object of router1
+	def __init__(self,connection):
+	The constructor initialize the ArpCache bind each
+	port with an IP address correspondent to the topology. Then we create a routeTable to guide the inter-network 
+	connection. When a routeTable has been created, we add listeners to listen if an event occurs.
+
+	def _handle_PacketIn(self,event):
+	When a packets is comming, it will use event.parsed.type to distinguish which kind of packet
+	it is. 
+	If ARP, call global function "handleARP". 
+	If IP, calls global function "handleIP".
+
+
+def handleARP(self, event):
+	dpid is a key of dictoinary to extract ArpCache correspond to dpid. packet is the packet 
+	that event contains.
+	if the type of arp is arp.REPLY:
+		add source IP, source MAC, dst IP, dst MAC into the ArpCache
+
+	if the type of arp is arp.REQUEST:
+		add the source IP, source MAC into the ArpCAche
+		if key: dst IP in arpCache[dpid][port number] dictionary
+			send an Arp reply 
+
+
+def handleIP(self, event)
+	dpid is a key of dictoinary to extract distinguish which switch it is. dstip is the 
+	destination IP
+	if the packet does not ping the router(ifEcho(ipLoad, dstip, self, event))
+		if the destination of IP is not in the route Table (ifReach(dstip, event, self))
+			send Arp destination unreachable packet
+
+def ifReach(dstip, event, self)
+	search the routeTable
+		extract the network address
+		if destination IP in network address in the routetable
+			if routeTable tells to send it back, do nothing and continue loop
+			if router knows desIP's MAC address, forwarding the packet
+			else
+				router does not knows detIP's MAC address, send ARP request.
+			return true
+		return false
+
+def handleIP(self, event):
+	search the dstIP if is the port IP address.
+		if true 
+			if the packet is an ICMP packet
+				if is the ICMP ECHO
+					construct the ICMP echo packet
+				return true
+			return true
+		return true
+	return true
+
+data structure of arpCache:
+	arpTable={dpid:{the ARP dictionary of a specific dpid}}
+	the ARP dictionary of a specific dpid = {ports in a router:{the port IP: the port MAC address}}
+
+data structure of portsTable:
+	portsTable={dpid:[ports, ip, mac]}
+
+data structure of routeTable:
+	routeTable=[[several arraies of network id, next hop ip, next port ip, port number]]
+
+
+The other description is also in the comment of code.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
